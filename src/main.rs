@@ -1,5 +1,7 @@
 use rfd::{FileDialog};
 use clap::{App, Arg};
+use homedir::get_my_home;
+use std::path::Path;
 
 fn main() {
   let matches = App::new("filepicker")
@@ -29,9 +31,13 @@ fn main() {
     .get_matches();
 
   let action = matches.value_of("action").unwrap();
-  let directory = matches.value_of("directory").unwrap();
+  let mut directory: String = matches.value_of("directory").unwrap().into();
   let title = matches.value_of("title").unwrap();
   let filename = matches.value_of("filename");
+
+  if directory == "~" {
+    directory = get_my_home().unwrap().unwrap().into_os_string().into_string().unwrap();
+  }
 
   match action {
     "pick_folder" => pick_folder(directory, title),
@@ -51,23 +57,35 @@ fn main() {
   }
 }
 
-fn pick_folder(directory: &str, title: &str) {
+fn pick_folder(directory: String, title: &str) {
   match FileDialog::new().set_directory(directory).set_title(title).pick_folder() {
-    Some(path) => println!("{}", path.display()),
+    Some(path) => print_result_folder(&path),
     None => std::process::exit(1),
   };
 }
 
-fn pick_file(directory: &str, title: &str) {
+fn pick_file(directory: String, title: &str) {
   match FileDialog::new().set_directory(directory).set_title(title).pick_file() {
-    Some(path) => println!("{}", path.display()),
+    Some(path) => print_result_file(&path),
     None => std::process::exit(1),
   }
 }
 
-fn save_file(directory: &str, title: &str, filename: &str) {
+fn save_file(directory: String, title: &str, filename: &str) {
   match FileDialog::new().set_directory(directory).set_title(title).set_file_name(filename).save_file() {
-    Some(path) => println!("{}", path.display()),
+    Some(path) => print_result_file(&path),
     None => std::process::exit(1),
   }
+}
+
+fn print_result_file(path: &Path) {
+  let dir = path.parent().unwrap();
+  let filename = path.file_name().unwrap().to_str().unwrap();
+  println!("{}", path.display());
+  println!("{}", dir.display());
+  println!("{}", filename);
+}
+
+fn print_result_folder(dir: &Path) {
+  println!("{}", dir.display());
 }
