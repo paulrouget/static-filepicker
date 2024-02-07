@@ -26,6 +26,3 @@ cp ./target/x86_64-pc-windows-gnu/release/filepicker.exe dist/filepicker-windows
 
 cross build --target i686-pc-windows-gnu --release
 cp ./target/i686-pc-windows-gnu/release/filepicker.exe dist/filepicker-windows-i686.exe
-
-cross build --target aarch64-pc-windows-gnu --release
-cp ./target/aarch64-pc-windows-gnu/release/filepicker.exe dist/filepicker-windows-aarch64.exe
