@@ -35,8 +35,10 @@ fn main() {
   let title = matches.value_of("title").unwrap();
   let filename = matches.value_of("filename");
 
-  if directory == "~" {
-    directory = get_my_home().unwrap().unwrap().into_os_string().into_string().unwrap();
+  if directory.starts_with("~") {
+    let subdir = directory.strip_prefix("~").unwrap();
+    let home = get_my_home().unwrap().unwrap().into_os_string().into_string().unwrap();
+    directory = format!("{home}{subdir}");
   }
 
   match action {
